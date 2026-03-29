@@ -48,7 +48,7 @@ Xcode에서 추가하는 방법:
 
 ```swift
 dependencies: [
-  .package(url: "https://github.com/indextrown/NextNavigator.git", branch: "main")
+  .package(url: "https://github.com/indextrown/NextNavigator.git", from: "1.0.0")
 ]
 ```
 
@@ -62,7 +62,7 @@ targets: [
 ]
 ```
 
-공개 저장소를 기준으로 붙일 때는 `https://github.com/indextrown/NextNavigator.git`를 사용하면 된다.
+공개 저장소를 기준으로 붙일 때는 `https://github.com/indextrown/NextNavigator.git`와 `from: "1.0.0"` 조합을 사용하면 된다.
 로컬에서 같이 개발 중이라면 로컬 패키지 방식이 가장 빠르다.
 
 ## 핵심 개념
