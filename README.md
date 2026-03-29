@@ -27,6 +27,44 @@
 - state restoration
 - UIKit-only 예제 확장
 
+## 설치
+
+### Swift Package Manager
+
+Xcode에서 추가하는 방법:
+
+1. `File > Add Package Dependencies...`
+2. 이 저장소 URL 입력
+3. 원하는 version / branch / commit 선택
+4. 앱 타깃에 `NextNavigator` 연결
+
+로컬 패키지로 붙이는 방법:
+
+1. `File > Add Package Dependencies...`
+2. `Add Local...` 선택
+3. `NextNavigator/Package.swift`가 있는 폴더 선택
+
+`Package.swift`로 직접 추가하는 방법:
+
+```swift
+dependencies: [
+  .package(url: "https://github.com/indextrown/NextNavigator.git", branch: "main")
+]
+```
+
+```swift
+targets: [
+  .target(
+    name: "YourApp",
+    dependencies: [
+      .product(name: "NextNavigator", package: "NextNavigator")
+    ])
+]
+```
+
+공개 저장소를 기준으로 붙일 때는 `https://github.com/indextrown/NextNavigator.git`를 사용하면 된다.
+로컬에서 같이 개발 중이라면 로컬 패키지 방식이 가장 빠르다.
+
 ## 핵심 개념
 
 - `Route`
