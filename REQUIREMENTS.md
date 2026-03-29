@@ -1,4 +1,4 @@
-# NextNavigator 요구사항명세서
+# NextNavigator Requirements
 
 ## 1. 문서 목적
 

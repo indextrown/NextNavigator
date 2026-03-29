@@ -3,7 +3,7 @@
 `NextNavigator`는 UIKit controller를 코어로 두는 typed route 기반 navigation 라이브러리다.
 `LinkNavigator`를 벤치마킹했지만, 문자열 path 대신 타입 기반 route와 명시적 DI를 중심으로 다시 정리하는 방향을 목표로 한다.
 
-자세한 설계와 요구사항은 [요구사항명세서.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/요구사항명세서.md)를 보면 된다.
+자세한 설계와 요구사항은 [REQUIREMENTS.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/REQUIREMENTS.md)를 보면 된다.
 다음 작업 우선순위는 [TODO.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/TODO.md)에 정리돼 있다.
 
 ## 현재 상태
@@ -304,6 +304,6 @@ navigator.switchTab(tag: 1)
 
 ## 참고
 
-- 자세한 설계/요구사항: [요구사항명세서.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/요구사항명세서.md)
+- 자세한 설계/요구사항: [REQUIREMENTS.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/REQUIREMENTS.md)
 - 다음 작업 목록: [TODO.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/TODO.md)
 - route 개념 샘플: [RouteConceptSamples/README.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/Examples/RouteConceptSamples/README.md)
