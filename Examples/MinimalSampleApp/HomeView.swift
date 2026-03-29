@@ -64,6 +64,8 @@ struct HomeView: View {
           Text("modal active: \(navigator.isModalActive ? "true" : "false")")
             .font(.footnote.monospaced())
             .foregroundStyle(.secondary)
+        } footer: {
+            Text("Modal Footer")
         }
 
         section("Tab") {
@@ -84,12 +86,39 @@ struct HomeView: View {
     }
   }
 
+    /*
+     section(
+       title: "Stack",
+       content: {
+         View1
+         View2
+         View3
+       }
+     )
+     
+     ->
+     
+     VStack {
+       Text("Stack")
+
+       VStack {   // ← ViewBuilder가 묶어줌
+         demoButton(...)
+         demoButton(...)
+         demoButton(...)
+       }
+     }
+     */
   @ViewBuilder
-  private func section<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+    private func section<Content: View, Footer: View>(
+    _ title: String,
+    @ViewBuilder content: () -> Content,
+    @ViewBuilder footer: () -> Footer = { EmptyView() }
+  ) -> some View {
     VStack(alignment: .leading, spacing: 12) {
       Text(title)
         .font(.headline)
       content()
+      footer()
     }
   }
 
