@@ -42,6 +42,48 @@
 - `WrappingController`
   SwiftUI `View`를 `UIViewController`로 감싸는 어댑터다.
 
+## 아키텍처
+
+`NextNavigator`는 크게 `Core`, `Registry`, `Adapter`, `Model` 계층으로 나뉜다.
+
+### Core
+
+- `Navigator`
+  라이브러리의 메인 진입점이다. push, back, present, tab 전환 같은 공개 연산을 제공한다.
+- `SingleStackCoordinator`
+  하나의 `UINavigationController` stack을 읽고 바꾸는 역할을 맡는다.
+- `ModalCoordinator`
+  modal용 `UINavigationController`를 만들고 present/dismiss를 담당한다.
+- `TabCoordinator`
+  탭별 navigation controller를 만들고 현재 탭 전환을 담당한다.
+- `AnyRouteIdentifiable`
+  각 화면이 어떤 route에 대응하는지 stack 안에서 추적할 수 있게 해준다.
+
+### Registry
+
+- `RouteRegistry`
+  route를 어떤 화면으로 만들지 등록하는 장소다.
+- `RouteBuilder`
+  특정 route를 받아 `UIViewController`를 만드는 규칙이다.
+
+### Adapter
+
+- `NavigationHost`
+  단일 stack `Navigator`를 SwiftUI에 올리는 bridge다.
+- `TabNavigationHost`
+  탭 기반 `Navigator`를 SwiftUI에 올리는 bridge다.
+- `WrappingController`
+  SwiftUI `View`를 UIKit controller로 감싸는 어댑터다.
+
+### Model
+
+- `RouteContext`
+  builder에 전달되는 실행 컨텍스트다.
+- `TabNavigationItem`
+  탭 구성에 필요한 tag, root route, tab item 정보를 담는다.
+- `ModalPresentationStyle`
+  modal 표시 스타일을 추상화한 타입이다.
+
 ## 빠른 시작
 
 ### 1. Route 정의
@@ -142,24 +184,45 @@ navigator.switchTab(tag: 1)
 
 ## 현재 지원 연산
 
+아래 시간복잡도는 현재 구현 기준의 대략적인 비용이다.
+
+- `B`: 등록된 `RouteBuilder` 개수
+- `S`: 현재 활성 `UINavigationController` stack 길이
+- `R`: 한 번에 전달한 route 개수
+
+실제 UIKit 내부 animation/presentation 비용은 별도로 있을 수 있고, 여기서는 `NextNavigator`가 수행하는 탐색과 배열 조작 비용 위주로 본다.
+
 ### Stack
 
 - `push(_ route:)`
+  - 시간복잡도: `O(B + S)`
 - `push(_ routes:)`
+  - 시간복잡도: `O(R * B + (S + R))`
 - `replace(with:)`
+  - 시간복잡도: `O(R * B + R)`
 - `back()`
+  - 시간복잡도: `O(1)`
 - `backTo(_ route:)`
+  - 시간복잡도: `O(S)`
 - `backOrPush(_ route:)`
+  - 시간복잡도: route가 있으면 `O(S)`, 없으면 `O(S + B)`
 - `currentRoutes()`
+  - 시간복잡도: `O(S)`
 
 ### Modal
 
 - `present(_ route:)`
+  - 시간복잡도: `O(B)`
 - `present(_ routes:)`
+  - 시간복잡도: `O(R * B + R)`
 - `presentFullScreen(_ route:)`
+  - 시간복잡도: `O(B)`
 - `presentFullScreen(_ routes:)`
+  - 시간복잡도: `O(R * B + R)`
 - `dismissModal()`
+  - 시간복잡도: `O(1)`
 - `isModalActive`
+  - 시간복잡도: `O(1)`
 
 정책:
 
@@ -170,7 +233,9 @@ navigator.switchTab(tag: 1)
 ### Tab
 
 - `switchTab(tag:)`
+  - 시간복잡도: `O(1)`
 - `switchTab(tag:popToRootIfSelected:)`
+  - 시간복잡도: 탭 전환만 하면 `O(1)`, 같은 탭 재선택 후 root 복귀는 `O(S)`
 
 정책:
 
@@ -178,6 +243,12 @@ navigator.switchTab(tag: 1)
 - 선택된 탭이 현재 활성 스택이 된다.
 - 같은 탭을 다시 선택하면 기본적으로 root로 pop한다.
 - modal이 떠 있으면 modal 스택이 우선 활성 스택이 된다.
+
+### 참고
+
+- `RouteRegistry.build(route:)`는 현재 `builders.first(where:)`를 사용하므로 route 1개당 `O(B)`다.
+- `backTo`와 `backOrPush`는 현재 stack에서 마지막 일치 화면을 찾기 위해 선형 탐색을 사용한다.
+- `switchTab`은 탭 controller 딕셔너리 조회를 사용하므로 기본적으로 `O(1)`이다.
 
 ## 샘플 앱
 

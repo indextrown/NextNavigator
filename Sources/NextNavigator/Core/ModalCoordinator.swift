@@ -1,6 +1,10 @@
 import UIKit
 
+/// Manages modal presentation and dismissal using a dedicated navigation
+/// controller.
 public struct ModalCoordinator<Dependencies, Route: Hashable> {
+  /// A factory kept injectable so tests can substitute a spy navigation
+  /// controller.
   public let makeNavigationController: () -> UINavigationController
 
   public init(
@@ -9,6 +13,8 @@ public struct ModalCoordinator<Dependencies, Route: Hashable> {
     self.makeNavigationController = makeNavigationController
   }
 
+  /// Builds a modal navigation stack for the given routes and presents it from
+  /// the provided presenter.
   public func present(
     routes: [Route],
     from presenter: UINavigationController?,
@@ -34,6 +40,7 @@ public struct ModalCoordinator<Dependencies, Route: Hashable> {
     return modalController
   }
 
+  /// Dismisses the currently presented modal navigation controller.
   public func dismiss(
     modalController: UINavigationController?,
     animated: Bool,
