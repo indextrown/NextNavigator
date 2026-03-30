@@ -6,6 +6,36 @@
 자세한 설계와 요구사항은 [REQUIREMENTS.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/REQUIREMENTS.md)를 보면 된다.
 다음 작업 우선순위는 [TODO.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/TODO.md)에 정리돼 있다.
 
+## 왜 UIKit 엔진 기반인가
+
+핵심은 이거다.
+
+SwiftUI의 `NavigationStack`은 "화면을 선언적으로 쌓는 것"에는 좋지만, 실제 앱에서 필요한 **복잡한 navigation을 명시적으로 통제하는 엔진**으로 쓰기에는 아쉬움이 있다.
+`NextNavigator`는 그 아쉬움을 해결하기 위해 navigation 엔진을 UIKit 기반으로 두었다.
+
+### `NavigationStack`만으로 갈 때 아쉬운 점
+
+- `NavigationStack`은 "지금 어떤 화면들이 쌓였는가"를 표현하는 데는 좋지만, "지금 어느 navigation 엔진이 활성인가"를 다루는 개념은 약하다.
+- `ObservableObject` 기반 navigation container를 두고 `@Published path`로 stack을 관리하면, path 변경이 view update의 트리거가 되어 원치 않는 `body` 재평가가 여러 스택이나 상위 컨테이너까지 퍼질 수 있다.
+- 실제 앱은 push만 있는 게 아니라 tab, modal, deep link, back 정책이 함께 움직이는데, 이걸 하나의 명시적인 제어 계층으로 묶기 어렵다.
+- `backTo`, `backOrPush`, `present`, `switchTab` 같은 imperative한 동작은 결국 화면 상태 표현만으로는 부족하고, 별도의 navigation 제어 로직이 필요해진다.
+- 탭마다 독립 stack 유지, modal 위에 별도 stack 유지, 현재 활성 stack 우선순위 같은 규칙을 직접 통제하려면 UIKit 쪽이 더 직관적이다.
+- 즉 문제의 핵심은 `NavigationStack`이 부족해서가 아니라, **복잡한 앱 navigation의 오케스트레이션을 전담하기엔 추상화 레벨이 다르다**는 점이다.
+
+### 그래서 `NextNavigator`는 이렇게 선택했다
+
+`NextNavigator`는 화면 UI는 SwiftUI로 만들 수 있게 두되, navigation의 실제 엔진은 `UINavigationController`, `UITabBarController`, modal presentation 위에 올렸다.
+
+이렇게 하면 아래가 더 명확해진다.
+
+- push/pop stack 제어를 `UINavigationController` 기준으로 직접 다룰 수 있다.
+- modal을 별도 navigation stack으로 분리해서 관리할 수 있다.
+- tab마다 독립된 navigation controller를 둘 수 있다.
+- 현재 활성 stack이 root인지, tab인지, modal인지 우선순위를 명확하게 정할 수 있다.
+- deep link도 결국 "어느 stack에 어떤 action으로 반영할지"를 하나의 navigator API로 모을 수 있다.
+
+즉 `NextNavigator`는 SwiftUI의 선언형 화면 작성은 활용하되, **복잡한 navigation에서는 상태 표현보다 엔진 제어가 더 중요하다**고 보고 UIKit을 코어로 선택한 라이브러리다.
+
 ## 핵심 기능
 
 - 타입 기반 라우팅

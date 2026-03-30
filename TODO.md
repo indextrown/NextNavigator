@@ -14,7 +14,6 @@
 - `present`, `presentFullScreen`, `dismissModal`
 - `TabCoordinator`, `switchTab`
 - `RouteRegistry`의 `matching` / `extracting` 등록 API
-- 딥링크 기본 타입과 navigator 진입점
 - `MinimalSampleApp` 샘플 앱
 - README 사용 가이드 확장
 - `.gitignore` 추가
@@ -119,7 +118,7 @@ P0 다음으로 바로 가치가 큰 작업이다.
 목표:
 
 - 현재는 SwiftUI + `WrappingController` 예제 위주다.
-- `UIViewController`를 직접 반환하는 registry 예제가 하나 있으면 라이브러리 성격이 더 분명해진다.
+- `UIViewController`를 직접 반환하는 registry 예제가 하나 있으면 라이브러리 성격이 더 분명해진다
 
 완료 기준:
 
@@ -147,12 +146,11 @@ P0 다음으로 바로 가치가 큰 작업이다.
 
 코어가 더 안정된 뒤 보는 확장 작업이다.
 
-### 9. 앱별 Deep Link parser 예제 추가
+### 9. Deep link parser 모듈
 
 목표:
 
-- `DeepLinkParser`를 실제 샘플 앱에서 구현한 예제 추가
-- `.onOpenURL` 연결 예제 추가
+- URL -> typed route 변환 계층 추가
 
 ### 10. Route metadata 일반화
 
