@@ -3,9 +3,9 @@ import XCTest
 @testable import NextNavigator
 
 final class NextNavigatorTests: XCTestCase {
-  func testRegistryBuildsMatchingController() {
+  func test_레지스트리가_일치하는_컨트롤러를_생성한다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.home) { context in
+      .registering(TestRoute.home) { context in
         TestViewController(route: context.route)
       }
 
@@ -15,7 +15,7 @@ final class NextNavigatorTests: XCTestCase {
       modalCoordinator: ModalCoordinator(makeNavigationController: { PresenterNavigationController() }))
 
     let built = registry.build(
-      route: .home,
+      route: TestRoute.home,
       navigator: navigator,
       dependencies: ())
 
@@ -23,12 +23,12 @@ final class NextNavigatorTests: XCTestCase {
     XCTAssertEqual(built?.anyRoute, AnyHashable(TestRoute.home))
   }
 
-  func testPushAppendsControllerToRootStack() {
+  func test_push를_호출하면_root_stack에_컨트롤러가_추가된다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.home) { context in
+      .registering(TestRoute.home) { context in
         TestViewController(route: context.route)
       }
-      .registering(.detail) { context in
+      .registering(TestRoute.detail) { context in
         TestViewController(route: context.route)
       }
 
@@ -38,24 +38,24 @@ final class NextNavigatorTests: XCTestCase {
       modalCoordinator: ModalCoordinator(makeNavigationController: { PresenterNavigationController() }))
 
     let rootController = UINavigationController()
-    rootController.setViewControllers(navigator.launch([.home]), animated: false)
+    rootController.setViewControllers(navigator.launch([TestRoute.home]), animated: false)
     navigator.rootController = rootController
 
-    navigator.push(.detail, animated: false)
+    navigator.push(TestRoute.detail, animated: false)
 
     XCTAssertEqual(rootController.viewControllers.count, 2)
-    XCTAssertEqual((rootController.viewControllers.last as? TestViewController)?.route, .detail)
+    XCTAssertEqual((rootController.viewControllers.last as? TestViewController)?.route, TestRoute.detail)
   }
 
-  func testBackOrPushPopsWhenRouteAlreadyExists() {
+  func test_backOrPush는_이미_존재하는_route가_있으면_pop한다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.home) { context in
+      .registering(TestRoute.home) { context in
         TestViewController(route: context.route)
       }
-      .registering(.detail) { context in
+      .registering(TestRoute.detail) { context in
         TestViewController(route: context.route)
       }
-      .registering(.settings) { context in
+      .registering(TestRoute.settings) { context in
         TestViewController(route: context.route)
       }
 
@@ -66,21 +66,77 @@ final class NextNavigatorTests: XCTestCase {
 
     let rootController = UINavigationController()
     rootController.setViewControllers(
-      navigator.launch([.home, .detail, .settings]),
+      navigator.launch([TestRoute.home, TestRoute.detail, TestRoute.settings]),
       animated: false)
     navigator.rootController = rootController
 
-    navigator.backOrPush(.detail, animated: false)
+    navigator.backOrPush(TestRoute.detail, animated: false)
 
     XCTAssertEqual(rootController.viewControllers.count, 2)
-    XCTAssertEqual((rootController.viewControllers.last as? TestViewController)?.route, .detail)
+    XCTAssertEqual((rootController.viewControllers.last as? TestViewController)?.route, TestRoute.detail)
   }
 
-  func testRegistryExtractingBuilderBuildsAssociatedValueRoute() {
+  func test_replace는_현재_stack을_새_route들로_교체한다() {
+    let registry = RouteRegistry<Void, TestRoute>()
+      .registering(TestRoute.home) { context in
+        TestViewController(route: context.route)
+      }
+      .registering(TestRoute.detail) { context in
+        TestViewController(route: context.route)
+      }
+      .registering(TestRoute.settings) { context in
+        TestViewController(route: context.route)
+      }
+
+    let navigator = Navigator<Void, TestRoute>(
+      dependencies: (),
+      registry: registry)
+
+    let rootController = UINavigationController()
+    rootController.setViewControllers(
+      navigator.launch([TestRoute.home, TestRoute.detail]),
+      animated: false)
+    navigator.rootController = rootController
+
+    navigator.replace(with: [TestRoute.settings], animated: false)
+
+    XCTAssertEqual(rootController.viewControllers.count, 1)
+    XCTAssertEqual((rootController.viewControllers.first as? TestViewController)?.route, TestRoute.settings)
+  }
+
+  func test_backTo는_마지막으로_일치하는_route까지_이동한다() {
+    let registry = RouteRegistry<Void, TestRoute>()
+      .registering(TestRoute.home) { context in
+        TestViewController(route: context.route)
+      }
+      .registering(TestRoute.detail) { context in
+        TestViewController(route: context.route)
+      }
+      .registering(TestRoute.settings) { context in
+        TestViewController(route: context.route)
+      }
+
+    let navigator = Navigator<Void, TestRoute>(
+      dependencies: (),
+      registry: registry)
+
+    let rootController = UINavigationController()
+    rootController.setViewControllers(
+      navigator.launch([TestRoute.home, TestRoute.detail, TestRoute.settings, TestRoute.detail, TestRoute.settings]),
+      animated: false)
+    navigator.rootController = rootController
+
+    navigator.backTo(TestRoute.detail, animated: false)
+
+    XCTAssertEqual(rootController.viewControllers.count, 4)
+    XCTAssertEqual((rootController.viewControllers.last as? TestViewController)?.route, TestRoute.detail)
+  }
+
+  func test_extracting_builder는_연관값_route를_생성한다() {
     let registry = RouteRegistry<Void, AssociatedRoute>()
       .registering(
         extracting: { route in
-          guard case let .detail(id) = route else { return nil }
+          guard case let AssociatedRoute.detail(id) = route else { return nil }
           return id
         },
         build: { context, id in
@@ -92,7 +148,7 @@ final class NextNavigatorTests: XCTestCase {
       registry: registry)
 
     let built = registry.build(
-      route: .detail(id: "42"),
+      route: AssociatedRoute.detail(id: "42"),
       navigator: navigator,
       dependencies: ())
 
@@ -100,9 +156,9 @@ final class NextNavigatorTests: XCTestCase {
     XCTAssertEqual((built as? AssociatedTestViewController)?.extractedID, "42")
   }
 
-  func testPresentCreatesModalController() {
+  func test_present를_호출하면_모달_컨트롤러가_생성된다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.settings) { context in
+      .registering(TestRoute.settings) { context in
         TestViewController(route: context.route)
       }
 
@@ -114,17 +170,37 @@ final class NextNavigatorTests: XCTestCase {
     let rootController = PresenterNavigationController()
     navigator.rootController = rootController
 
-    navigator.present(.settings, animated: false)
+    navigator.present(TestRoute.settings, animated: false)
 
     XCTAssertTrue(navigator.isModalActive)
     XCTAssertNotNil(navigator.modalController)
     XCTAssertEqual(rootController.presentCallCount, 1)
-    XCTAssertEqual((navigator.modalController?.viewControllers.first as? TestViewController)?.route, .settings)
+    XCTAssertEqual((navigator.modalController?.viewControllers.first as? TestViewController)?.route, TestRoute.settings)
   }
 
-  func testPresentFullScreenAppliesPresentationStyle() {
+  func test_등록되지_않은_route를_push하면_stack이_변하지_않는다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.settings) { context in
+      .registering(TestRoute.home) { context in
+        TestViewController(route: context.route)
+      }
+
+    let navigator = Navigator<Void, TestRoute>(
+      dependencies: (),
+      registry: registry)
+
+    let rootController = UINavigationController()
+    rootController.setViewControllers(navigator.launch([TestRoute.home]), animated: false)
+    navigator.rootController = rootController
+
+    navigator.push(TestRoute.missing, animated: false)
+
+    XCTAssertEqual(rootController.viewControllers.count, 1)
+    XCTAssertEqual((rootController.viewControllers.first as? TestViewController)?.route, TestRoute.home)
+  }
+
+  func test_presentFullScreen은_fullScreen_스타일을_적용한다() {
+    let registry = RouteRegistry<Void, TestRoute>()
+      .registering(TestRoute.settings) { context in
         TestViewController(route: context.route)
       }
 
@@ -136,14 +212,14 @@ final class NextNavigatorTests: XCTestCase {
     let rootController = PresenterNavigationController()
     navigator.rootController = rootController
 
-    navigator.presentFullScreen(.settings, animated: false)
+    navigator.presentFullScreen(TestRoute.settings, animated: false)
 
     XCTAssertEqual(navigator.modalController?.modalPresentationStyle, .fullScreen)
   }
 
-  func testBackDismissesModalWhenModalHasSingleController() {
+  func test_modal의_root에서_back을_호출하면_dismiss된다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.settings) { context in
+      .registering(TestRoute.settings) { context in
         TestViewController(route: context.route)
       }
 
@@ -154,7 +230,7 @@ final class NextNavigatorTests: XCTestCase {
 
     let rootController = PresenterNavigationController()
     navigator.rootController = rootController
-    navigator.present(.settings, animated: false)
+    navigator.present(TestRoute.settings, animated: false)
 
     let modalController = navigator.modalController as? PresenterNavigationController
     XCTAssertNotNil(modalController)
@@ -164,12 +240,12 @@ final class NextNavigatorTests: XCTestCase {
     XCTAssertEqual(modalController?.dismissCallCount, 1)
   }
 
-  func testPresentReplacesExistingModalController() {
+  func test_present는_기존_모달이_있으면_교체한다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.home) { context in
+      .registering(TestRoute.home) { context in
         TestViewController(route: context.route)
       }
-      .registering(.settings) { context in
+      .registering(TestRoute.settings) { context in
         TestViewController(route: context.route)
       }
 
@@ -181,10 +257,10 @@ final class NextNavigatorTests: XCTestCase {
     let rootController = PresenterNavigationController()
     navigator.rootController = rootController
 
-    navigator.present(.home, animated: false)
+    navigator.present(TestRoute.home, animated: false)
     let firstModal = navigator.modalController as? PresenterNavigationController
 
-    navigator.present(.settings, animated: false)
+    navigator.present(TestRoute.settings, animated: false)
     let secondModal = navigator.modalController as? PresenterNavigationController
 
     XCTAssertNotNil(firstModal)
@@ -194,12 +270,12 @@ final class NextNavigatorTests: XCTestCase {
     XCTAssertEqual(rootController.presentCallCount, 2)
   }
 
-  func testSwitchTabChangesSelectedController() {
+  func test_switchTab은_선택된_탭_컨트롤러를_변경한다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.home) { context in
+      .registering(TestRoute.home) { context in
         TestViewController(route: context.route)
       }
-      .registering(.settings) { context in
+      .registering(TestRoute.settings) { context in
         TestViewController(route: context.route)
       }
 
@@ -208,14 +284,15 @@ final class NextNavigatorTests: XCTestCase {
       registry: registry)
 
     let items = [
-      TabNavigationItem(tag: 0, route: .home, tabBarItem: UITabBarItem(title: "Home", image: nil, tag: 0)),
-      TabNavigationItem(tag: 1, route: .settings, tabBarItem: UITabBarItem(title: "Settings", image: nil, tag: 1)),
+      TabNavigationItem(tag: 0, route: TestRoute.home, tabBarItem: UITabBarItem(title: "Home", image: nil, tag: 0)),
+      TabNavigationItem(tag: 1, route: TestRoute.settings, tabBarItem: UITabBarItem(title: "Settings", image: nil, tag: 1)),
     ]
 
     let tabBarController = UITabBarController()
     let controllers = navigator.tabCoordinator.launch(items: items, navigator: navigator)
     tabBarController.setViewControllers(controllers, animated: false)
     tabBarController.selectedIndex = 0
+    tabBarController.selectedViewController = controllers[0]
     navigator.tabCoordinator.tabBarController = tabBarController
     navigator.tabCoordinator.setSelectedTag(0)
 
@@ -225,15 +302,15 @@ final class NextNavigatorTests: XCTestCase {
     XCTAssertTrue(tabBarController.selectedViewController === controllers[1])
   }
 
-  func testActiveControllerUsesSelectedTabController() {
+  func test_같은_탭을_다시_선택하면_root로_pop한다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.home) { context in
+      .registering(TestRoute.home) { context in
         TestViewController(route: context.route)
       }
-      .registering(.detail) { context in
+      .registering(TestRoute.detail) { context in
         TestViewController(route: context.route)
       }
-      .registering(.settings) { context in
+      .registering(TestRoute.settings) { context in
         TestViewController(route: context.route)
       }
 
@@ -242,8 +319,85 @@ final class NextNavigatorTests: XCTestCase {
       registry: registry)
 
     let items = [
-      TabNavigationItem(tag: 0, route: .home, tabBarItem: UITabBarItem(title: "Home", image: nil, tag: 0)),
-      TabNavigationItem(tag: 1, route: .settings, tabBarItem: UITabBarItem(title: "Settings", image: nil, tag: 1)),
+      TabNavigationItem(tag: 0, route: TestRoute.home, tabBarItem: UITabBarItem(title: "Home", image: nil, tag: 0)),
+      TabNavigationItem(tag: 1, route: TestRoute.settings, tabBarItem: UITabBarItem(title: "Settings", image: nil, tag: 1)),
+    ]
+
+    let tabBarController = UITabBarController()
+    let controllers = navigator.tabCoordinator.launch(items: items, navigator: navigator)
+    tabBarController.setViewControllers(controllers, animated: false)
+    tabBarController.selectedIndex = 0
+    tabBarController.selectedViewController = controllers[0]
+    navigator.tabCoordinator.tabBarController = tabBarController
+    navigator.tabCoordinator.setSelectedTag(0)
+
+    let selectedController = controllers[0]
+    selectedController.pushViewController(TestViewController(route: TestRoute.detail), animated: false)
+    XCTAssertEqual(selectedController.viewControllers.count, 2)
+
+    navigator.switchTab(tag: 0, popToRootIfSelected: true)
+
+    XCTAssertEqual(selectedController.viewControllers.count, 1)
+    XCTAssertEqual((selectedController.viewControllers.first as? TestViewController)?.route, TestRoute.home)
+  }
+
+  func test_같은_탭을_다시_선택해도_pop옵션이_false면_stack을_유지한다() {
+    let registry = RouteRegistry<Void, TestRoute>()
+      .registering(TestRoute.home) { context in
+        TestViewController(route: context.route)
+      }
+      .registering(TestRoute.detail) { context in
+        TestViewController(route: context.route)
+      }
+      .registering(TestRoute.settings) { context in
+        TestViewController(route: context.route)
+      }
+
+    let navigator = Navigator<Void, TestRoute>(
+      dependencies: (),
+      registry: registry)
+
+    let items = [
+      TabNavigationItem(tag: 0, route: TestRoute.home, tabBarItem: UITabBarItem(title: "Home", image: nil, tag: 0)),
+      TabNavigationItem(tag: 1, route: TestRoute.settings, tabBarItem: UITabBarItem(title: "Settings", image: nil, tag: 1)),
+    ]
+
+    let tabBarController = UITabBarController()
+    let controllers = navigator.tabCoordinator.launch(items: items, navigator: navigator)
+    tabBarController.setViewControllers(controllers, animated: false)
+    tabBarController.selectedIndex = 0
+    navigator.tabCoordinator.tabBarController = tabBarController
+    navigator.tabCoordinator.setSelectedTag(0)
+
+    let selectedController = controllers[0]
+    selectedController.pushViewController(TestViewController(route: TestRoute.detail), animated: false)
+    XCTAssertEqual(selectedController.viewControllers.count, 2)
+
+    navigator.switchTab(tag: 0, popToRootIfSelected: false)
+
+    XCTAssertEqual(selectedController.viewControllers.count, 2)
+    XCTAssertEqual((selectedController.viewControllers.last as? TestViewController)?.route, TestRoute.detail)
+  }
+
+  func test_activeController는_선택된_탭_컨트롤러를_사용한다() {
+    let registry = RouteRegistry<Void, TestRoute>()
+      .registering(TestRoute.home) { context in
+        TestViewController(route: context.route)
+      }
+      .registering(TestRoute.detail) { context in
+        TestViewController(route: context.route)
+      }
+      .registering(TestRoute.settings) { context in
+        TestViewController(route: context.route)
+      }
+
+    let navigator = Navigator<Void, TestRoute>(
+      dependencies: (),
+      registry: registry)
+
+    let items = [
+      TabNavigationItem(tag: 0, route: TestRoute.home, tabBarItem: UITabBarItem(title: "Home", image: nil, tag: 0)),
+      TabNavigationItem(tag: 1, route: TestRoute.settings, tabBarItem: UITabBarItem(title: "Settings", image: nil, tag: 1)),
     ]
 
     let tabBarController = UITabBarController()
@@ -253,16 +407,16 @@ final class NextNavigatorTests: XCTestCase {
     navigator.tabCoordinator.tabBarController = tabBarController
     navigator.tabCoordinator.setSelectedTag(1)
 
-    navigator.push(.detail, animated: false)
+    navigator.push(TestRoute.detail, animated: false)
 
     let selectedController = controllers[1]
     XCTAssertEqual(selectedController.viewControllers.count, 2)
-    XCTAssertEqual((selectedController.viewControllers.last as? TestViewController)?.route, .detail)
+    XCTAssertEqual((selectedController.viewControllers.last as? TestViewController)?.route, TestRoute.detail)
   }
 
-  func testPresentUsesSelectedTabControllerAsPresenter() {
+  func test_탭_환경의_present는_선택된_탭_컨트롤러를_presenter로_사용한다() {
     let registry = RouteRegistry<Void, TestRoute>()
-      .registering(.settings) { context in
+      .registering(TestRoute.settings) { context in
         TestViewController(route: context.route)
       }
 
@@ -274,13 +428,13 @@ final class NextNavigatorTests: XCTestCase {
     let tabBarController = UITabBarController()
     let first = PresenterNavigationController()
     let second = PresenterNavigationController()
-    second.setViewControllers([TestViewController(route: .settings)], animated: false)
+    second.setViewControllers([TestViewController(route: TestRoute.settings)], animated: false)
     tabBarController.setViewControllers([first, second], animated: false)
     tabBarController.selectedViewController = second
     navigator.tabCoordinator.tabBarController = tabBarController
     navigator.tabCoordinator.setSelectedTag(1)
 
-    navigator.present(.settings, animated: false)
+    navigator.present(TestRoute.settings, animated: false)
 
     XCTAssertEqual(second.presentCallCount, 1)
     XCTAssertNotNil(navigator.modalController)
@@ -291,6 +445,7 @@ private enum TestRoute: Hashable {
   case home
   case detail
   case settings
+  case missing
 }
 
 private enum AssociatedRoute: Hashable {

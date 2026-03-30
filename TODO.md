@@ -14,6 +14,7 @@
 - `present`, `presentFullScreen`, `dismissModal`
 - `TabCoordinator`, `switchTab`
 - `RouteRegistry`의 `matching` / `extracting` 등록 API
+- 딥링크 기본 타입과 navigator 진입점
 - `MinimalSampleApp` 샘플 앱
 - README 사용 가이드 확장
 - `.gitignore` 추가
@@ -146,11 +147,12 @@ P0 다음으로 바로 가치가 큰 작업이다.
 
 코어가 더 안정된 뒤 보는 확장 작업이다.
 
-### 9. Deep link parser 모듈
+### 9. 앱별 Deep Link parser 예제 추가
 
 목표:
 
-- URL -> typed route 변환 계층 추가
+- `DeepLinkParser`를 실제 샘플 앱에서 구현한 예제 추가
+- `.onOpenURL` 연결 예제 추가
 
 ### 10. Route metadata 일반화
 

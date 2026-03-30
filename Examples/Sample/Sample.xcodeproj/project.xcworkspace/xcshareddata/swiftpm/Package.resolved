@@ -1,0 +1,15 @@
+{
+  "originHash" : "177d8572aee0c3e14ee7717884ca870a18d2c7fc59dfcadb0ccd3a609d646399",
+  "pins" : [
+    {
+      "identity" : "nextnavigator",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/indextrown/NextNavigator.git",
+      "state" : {
+        "revision" : "9cc032c05405a939c1967519ae08fb3ed2b46c52",
+        "version" : "1.0.1"
+      }
+    }
+  ],
+  "version" : 3
+}

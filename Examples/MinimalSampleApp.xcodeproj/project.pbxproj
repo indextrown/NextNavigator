@@ -15,6 +15,7 @@
 		A10000000000000000000016 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006 /* DetailView.swift */; };
 		A10000000000000000000017 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000007 /* SettingsView.swift */; };
 		A10000000000000000000018 /* NextNavigator in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000031 /* NextNavigator */; };
+		DF6AF27B2F7A2C7D0093C10F /* AppDeepLinkParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6AF27A2F7A2C7D0093C10F /* AppDeepLinkParser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		A10000000000000000000006 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		A10000000000000000000007 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A10000000000000000000008 /* MinimalSampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MinimalSampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF6AF27A2F7A2C7D0093C10F /* AppDeepLinkParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDeepLinkParser.swift; sourceTree = "<group>"; };
+		DF6AF27C2F7A2E5C0093C10F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,9 +54,11 @@
 		A1000000000000000000000A /* MinimalSampleApp */ = {
 			isa = PBXGroup;
 			children = (
+				DF6AF27C2F7A2E5C0093C10F /* Info.plist */,
 				A10000000000000000000001 /* SampleApp.swift */,
 				A10000000000000000000002 /* AppRoute.swift */,
 				A10000000000000000000003 /* AppDependencies.swift */,
+				DF6AF27A2F7A2C7D0093C10F /* AppDeepLinkParser.swift */,
 				A10000000000000000000004 /* AppRouter.swift */,
 				A10000000000000000000005 /* HomeView.swift */,
 				A10000000000000000000006 /* DetailView.swift */,
@@ -148,6 +153,7 @@
 				A10000000000000000000017 /* SettingsView.swift in Sources */,
 				A10000000000000000000012 /* AppRoute.swift in Sources */,
 				A10000000000000000000016 /* DetailView.swift in Sources */,
+				DF6AF27B2F7A2C7D0093C10F /* AppDeepLinkParser.swift in Sources */,
 				A10000000000000000000011 /* SampleApp.swift in Sources */,
 				A10000000000000000000015 /* HomeView.swift in Sources */,
 				A10000000000000000000014 /* AppRouter.swift in Sources */,
@@ -279,6 +285,7 @@
 				DEVELOPMENT_TEAM = LGX4B4WC66;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MinimalSampleApp/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -310,6 +317,7 @@
 				DEVELOPMENT_TEAM = LGX4B4WC66;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MinimalSampleApp/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

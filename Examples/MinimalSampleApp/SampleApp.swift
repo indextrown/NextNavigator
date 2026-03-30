@@ -22,6 +22,9 @@ struct SampleApp: App {
             tabBarItem: UITabBarItem(title: "Settings", image: nil, tag: 1),
             prefersLargeTitles: true)
         ])
+      .onOpenURL { url in
+        navigator.handle(url: url, parser: AppDeepLinkParser())
+      }
       .ignoresSafeArea()
     }
   }
