@@ -17,3 +17,5 @@ xcuserdata/
 *.xcodeproj/xcuserdata/
 *.xcworkspace/xcuserdata/
 
+# Local study notes
+NEXTNAVIGATOR_REBUILD_GUIDE.local.md
