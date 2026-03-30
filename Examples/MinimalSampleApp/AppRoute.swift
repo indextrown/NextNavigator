@@ -1,6 +1,7 @@
 enum AppRoute: Hashable, CustomStringConvertible {
   case home
   case detail(id: String)
+  case mvvmSample
   case settings
 
   var description: String {
@@ -9,6 +10,8 @@ enum AppRoute: Hashable, CustomStringConvertible {
       "home"
     case let .detail(id):
       "detail(id: \(id))"
+    case .mvvmSample:
+      "mvvmSample"
     case .settings:
       "settings"
     }

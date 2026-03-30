@@ -21,6 +21,15 @@ enum AppRouter {
               navigator: context.navigator)
           }
         })
+      .registering(.mvvmSample) { context in
+        WrappingController(route: context.route, title: "MVVM Sample") {
+          MVVMSampleView(
+            viewModel: MVVMSampleViewModel(
+              navigator: context.navigator,
+              analytics: context.dependencies.analytics,
+              userRepository: context.dependencies.userRepository))
+        }
+      }
       .registering(.settings) { context in
         WrappingController(route: context.route, title: "Settings") {
           SettingsView(navigator: context.navigator)

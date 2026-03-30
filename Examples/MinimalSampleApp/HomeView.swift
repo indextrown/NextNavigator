@@ -15,6 +15,10 @@ struct HomeView: View {
           .foregroundStyle(.secondary)
 
         section("Stack") {
+          demoButton("Push MVVM Sample") {
+            navigator.push(.mvvmSample)
+          }
+
           demoButton("Push Detail 42") {
             navigator.push(.detail(id: "42"))
           }
@@ -45,6 +49,10 @@ struct HomeView: View {
         }
 
         section("Modal") {
+          demoButton("Present MVVM Sample") {
+            navigator.present(.mvvmSample)
+          }
+
           demoButton("Present Settings") {
             navigator.present(.settings)
           }

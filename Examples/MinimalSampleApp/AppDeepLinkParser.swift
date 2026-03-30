@@ -10,6 +10,8 @@ struct AppDeepLinkParser: DeepLinkParser {
     switch components.host {
     case "home":
       return DeepLink(route: .home, action: .replace)
+    case "mvvm":
+      return DeepLink(route: .mvvmSample, action: .push)
     case "settings":
       return DeepLink(route: .settings, action: .present(style: .fullScreen))
     case "detail":

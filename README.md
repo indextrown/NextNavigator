@@ -6,6 +6,25 @@
 자세한 설계와 요구사항은 [REQUIREMENTS.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/REQUIREMENTS.md)를 보면 된다.
 다음 작업 우선순위는 [TODO.md](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/TODO.md)에 정리돼 있다.
 
+## 핵심 기능
+
+- 타입 기반 라우팅
+  - 문자열 path 대신 `enum` 기반 route로 화면 이동을 표현한다.
+- UIKit 코어 네비게이션
+  - `UINavigationController`, `UITabBarController`, modal presentation을 직접 제어한다.
+- 명시적 의존성 주입
+  - `RouteContext`를 통해 `navigator`, `route`, `dependencies`를 함께 전달한다.
+- RouteRegistry 기반 화면 생성
+  - route마다 어떤 화면을 만들지 registry에 등록하고, builder가 `UIViewController`를 생성한다.
+- Stack / Modal / Tab 통합 연산
+  - `push`, `replace`, `back`, `backTo`, `backOrPush`, `present`, `dismissModal`, `switchTab`을 일관된 API로 제공한다.
+- SwiftUI 브리지
+  - `NavigationHost`, `TabNavigationHost`, `WrappingController`로 SwiftUI 화면을 UIKit 스택에 연결할 수 있다.
+- 딥링크 진입점
+  - `DeepLinkParser`와 `navigator.handle(url:parser:)`로 custom scheme, universal link를 route로 연결할 수 있다.
+- 샘플 앱 제공
+  - `MinimalSampleApp`에서 stack, modal, tab, deep link, MVVM 기반 화면 흐름을 직접 눌러볼 수 있다.
+
 ## 현재 상태
 
 지금 구현된 핵심은 아래와 같다.
@@ -627,10 +646,13 @@ struct AppDeepLinkParser: DeepLinkParser {
 - 딥링크 parser: [AppDeepLinkParser.swift](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/Examples/MinimalSampleApp/AppDeepLinkParser.swift)
 - 홈 테스트 화면: [HomeView.swift](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/Examples/MinimalSampleApp/HomeView.swift)
 - 디테일 테스트 화면: [DetailView.swift](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/Examples/MinimalSampleApp/DetailView.swift)
+- MVVM 샘플 화면: [MVVMSampleView.swift](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/Examples/MinimalSampleApp/MVVMSampleView.swift)
 - 설정 테스트 화면: [SettingsView.swift](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/Examples/MinimalSampleApp/SettingsView.swift)
 - Xcode 프로젝트: [MinimalSampleApp.xcodeproj](/Users/kimdonghyeon/2025/개발/오픈소스공식/LinkNavigator-main/NextNavigator/Examples/MinimalSampleApp.xcodeproj)
 
 `MinimalSampleApp`은 단순 소개용이 아니라 연산 테스트용 샘플이다.
+
+추가로 `MVVMSampleView`는 View가 상태를 직접 만들지 않고, `MVVMSampleViewModel`이 `ObservableObject`로 상태와 네비게이션 액션을 관리하는 예제다. 홈 화면의 `Push MVVM Sample`, `Present MVVM Sample` 버튼이나 `nextnavigator://mvvm` 딥링크로 바로 확인할 수 있다.
 홈/디테일/설정 화면에서 stack, modal, tab 연산을 직접 눌러볼 수 있다.
 
 ## 참고
